@@ -57,5 +57,5 @@ This isn't a "Hello World" repository. Every daily module is curated to address 
 
 ### **Week 5: Advanced Engineering**
 * **Day 29:** Profiling: `pprof`, Flame Graphs, and GC Traces
-* **Day 30:** Tooling: Cobra CLI & Production Docker (Distroless)
-* **Day 31:** Hexagonal Architecture & The Path to Senior Go Engineer
+* **Day 30:** Go-centric Docker & Resilience Patterns
+* **Day 31:** Go memory model & The Path to Pro Go Engineer
