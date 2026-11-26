@@ -1,0 +1,25 @@
+# syntax=docker/dockerfile:1
+# Build from the repository root, so go.mod and go.sum are in the context:
+#
+#   docker build -f examples/059-docker/Dockerfile.scratch -t gosvc:scratch .
+FROM golang:1.26-alpine AS build
+# scratch has no CA bundle; take Alpine's and copy it into the final stage.
+RUN apk add --no-cache ca-certificates
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
+COPY . .
+# -tags timetzdata embeds the time zone database in the binary (about 450 KB),
+# because scratch has no /usr/share/zoneinfo.
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 go build -trimpath -tags timetzdata -ldflags="-s -w" -o /out/app ./examples/059-docker
+
+FROM scratch
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /out/app /app
+# scratch has no /etc/passwd, so a user name can't be resolved; a numeric
+# UID:GID works without one (65532 matches distroless's nonroot).
+USER 65532:65532
+EXPOSE 8080
+ENTRYPOINT ["/app"]
