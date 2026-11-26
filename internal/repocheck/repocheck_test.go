@@ -12,7 +12,7 @@ import (
 
 // requireAllExamples is flipped to true once every part has an example
 // (final phase of the rollout). Until then, missing examples are allowed.
-const requireAllExamples = false
+const requireAllExamples = true
 
 var (
 	slugRE = regexp.MustCompile(`^\d{3}-[a-z0-9]+(-[a-z0-9]+)*$`)
