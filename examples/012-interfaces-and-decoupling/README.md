@@ -15,7 +15,7 @@ Day 06 · Week 1 · Why you should accept interfaces and return concrete structs
 ```sh
 go run ./examples/012-interfaces-and-decoupling
 go test ./examples/012-interfaces-and-decoupling
-go build -gcflags=-m ./examples/012-interfaces-and-decoupling   # optional: where &File{} escapes
+go build -gcflags=-m -o bin/ ./examples/012-interfaces-and-decoupling   # optional: where &File{} escapes
 ```
 
 ## What to look for

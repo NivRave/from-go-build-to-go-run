@@ -20,7 +20,7 @@ import (
 //
 // Check what escape analysis decides with:
 //
-//	go build -gcflags=-m ./examples/058-flame-graphs-and-gc-traces
+//	go build -gcflags=-m -o bin/ ./examples/058-flame-graphs-and-gc-traces
 
 // tally is a non-retaining sink: save only reads the slice.
 type tally struct{ bytes int }

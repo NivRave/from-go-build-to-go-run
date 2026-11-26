@@ -17,7 +17,7 @@ Each demo calls a small `//go:noinline` function 1000 times and counts the heap 
 ```sh
 go run ./examples/015-pointers
 go test ./examples/015-pointers
-go build -gcflags=-m ./examples/015-pointers
+go build -gcflags=-m -o bin/ ./examples/015-pointers
 go test -run='^$' -bench=. -benchmem ./examples/015-pointers
 ```
 
@@ -49,7 +49,7 @@ StackInuse at depth 100000:  16.22 MB
 no stack overflow: the runtime copied the stack to a bigger one as it grew
 ```
 
-The compiler explains each result. These are the relevant lines of `go build -gcflags=-m ./examples/015-pointers` (Windows prints the directory part with backslashes):
+The compiler explains each result. These are the relevant lines of `go build -gcflags=-m -o bin/ ./examples/015-pointers` (Windows prints the directory part with backslashes):
 
 ```text
 examples/015-pointers/main.go:84:2: moved to heap: u

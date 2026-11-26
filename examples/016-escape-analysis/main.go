@@ -7,8 +7,8 @@
 // Run:
 //
 //	go run ./examples/016-escape-analysis
-//	go build -gcflags=-m ./examples/016-escape-analysis
-//	go build -gcflags=-m=2 ./examples/016-escape-analysis
+//	go build -gcflags=-m -o bin/ ./examples/016-escape-analysis
+//	go build -gcflags=-m=2 -o bin/ ./examples/016-escape-analysis
 //	go test -bench=. -benchmem ./examples/016-escape-analysis
 package main
 

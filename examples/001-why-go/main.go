@@ -7,7 +7,7 @@
 // Run:
 //
 //	go run ./examples/001-why-go
-//	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o app-linux-arm64 ./examples/001-why-go
+//	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o bin/app-linux-arm64 ./examples/001-why-go
 package main
 
 import (

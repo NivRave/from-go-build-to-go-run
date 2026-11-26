@@ -7,7 +7,7 @@
 // Run:
 //
 //	go run ./examples/015-pointers
-//	go build -gcflags=-m ./examples/015-pointers
+//	go build -gcflags=-m -o bin/ ./examples/015-pointers
 //	go test -run='^$' -bench=. -benchmem ./examples/015-pointers
 package main
 

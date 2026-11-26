@@ -7,7 +7,7 @@
 // Run:
 //
 //	go run ./examples/012-interfaces-and-decoupling
-//	go build -gcflags=-m ./examples/012-interfaces-and-decoupling
+//	go build -gcflags=-m -o bin/ ./examples/012-interfaces-and-decoupling
 package main
 
 import (

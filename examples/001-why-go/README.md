@@ -13,13 +13,13 @@ Day 01 · Week 1 · Philosophy & strengths.
 ```sh
 go run ./examples/001-why-go
 go test ./examples/001-why-go
-CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o app-linux-arm64 ./examples/001-why-go
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o bin/app-linux-arm64 ./examples/001-why-go
 ```
 
 PowerShell form of the cross-compile:
 
 ```powershell
-$env:CGO_ENABLED="0"; $env:GOOS="linux"; $env:GOARCH="arm64"; go build -o app-linux-arm64 ./examples/001-why-go
+$env:CGO_ENABLED="0"; $env:GOOS="linux"; $env:GOARCH="arm64"; go build -o bin/app-linux-arm64 ./examples/001-why-go
 ```
 
 ## What to look for
@@ -45,7 +45,7 @@ vcs:          not stamped (expected under go run; use go build)
 4 workers squared [1 2 3 4 5 6 7 8]; sum of squares = 204
 ```
 
-- `GOOS/GOARCH` is baked in at build time. Cross-compile with the command above and `go version -m app-linux-arm64` reads the embedded `GOOS=linux` and `GOARCH=arm64` settings without running the binary.
+- `GOOS/GOARCH` is baked in at build time. Cross-compile with the command above and `go version -m bin/app-linux-arm64` reads the embedded `GOOS=linux` and `GOARCH=arm64` settings without running the binary.
 - `GOMAXPROCS` defaults to the number of CPUs, but since Go 1.25 it also respects a container's CPU limit, so inside a CPU-limited container it can be lower than `NumCPU`.
 - `go run` doesn't stamp VCS information. Build the binary with `go build` inside the repository and section 2 also prints `vcs`, `vcs.revision`, `vcs.time` and `vcs.modified`.
 - The workers finish in any order, but the sum (204) is deterministic, which is why it is the only output asserted by `example_test.go`.

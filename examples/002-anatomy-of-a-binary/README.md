@@ -12,9 +12,9 @@ Day 01 · Week 1 · From package main to OS execution.
 ```sh
 go run ./examples/002-anatomy-of-a-binary
 go test ./examples/002-anatomy-of-a-binary
-go build -o hello ./examples/002-anatomy-of-a-binary
-go build -ldflags="-s -w" -o hello-small ./examples/002-anatomy-of-a-binary
-go version -m hello
+go build -o bin/hello ./examples/002-anatomy-of-a-binary
+go build -ldflags="-s -w" -o bin/hello-small ./examples/002-anatomy-of-a-binary
+go version -m bin/hello
 ```
 
 On Windows, `go build` appends `.exe` only when `-o` is omitted, so name the outputs `hello.exe` and `hello-small.exe` there if you want to run them directly.
@@ -39,7 +39,7 @@ built with:        go1.26.4
 - `greeting` is declared above `name` in the source, yet `name` is initialised first, because `greeting`'s initialiser reads it. Go sorts package initialisation by dependency.
 - `init()` sees fully initialised package variables, and `main.main` comes last. `example_test.go` asserts steps 1-3: the test binary runs the same package initialisation, it just never calls `main`.
 - Stripping the symbol table and DWARF debug info with `-ldflags="-s -w"` shrinks the binary noticeably: on one Windows/amd64 run, about 2.5 MB became about 1.7 MB. Sizes vary by platform and Go version.
-- `go version -m hello` prints the module path, the Go version, build settings such as `CGO_ENABLED`, `GOOS` and `GOARCH`, and (for `go build` inside a repository) the VCS revision, all read from the binary.
+- `go version -m bin/hello` prints the module path, the Go version, build settings such as `CGO_ENABLED`, `GOOS` and `GOARCH`, and (for `go build` inside a repository) the VCS revision, all read from the binary.
 
 ## Notes and corrections
 

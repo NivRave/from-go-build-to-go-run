@@ -46,7 +46,7 @@ BenchmarkIterSeq                     0 B/op     0 allocs/op
 ```
 
 - `CollectAll` allocates proportionally to `n`; the streaming versions allocate nothing, whatever `n` is.
-- The closure generator shows **0 allocs** even though slide p03 says `current` escapes. The compiler inlined `IntGenerator`, so the closure never left the caller's frame. Run `go build -gcflags=-m ./examples/020-generators-and-streams` and you'll see both `moved to heap: current` (for the standalone function) and `inlining call to IntGenerator` (at the call sites, where it stays on the stack).
+- The closure generator shows **0 allocs** even though slide p03 says `current` escapes. The compiler inlined `IntGenerator`, so the closure never left the caller's frame. Run `go build -gcflags=-m -o bin/ ./examples/020-generators-and-streams` and you'll see both `moved to heap: current` (for the standalone function) and `inlining call to IntGenerator` (at the call sites, where it stays on the stack).
 
 ## Notes and corrections
 

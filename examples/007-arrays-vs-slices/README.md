@@ -16,7 +16,7 @@ Day 04 · Week 1 · Why we (almost) never use arrays.
 go run ./examples/007-arrays-vs-slices
 go test ./examples/007-arrays-vs-slices
 go test -run='^$' -bench=. -benchmem ./examples/007-arrays-vs-slices
-go build -gcflags=-m ./examples/007-arrays-vs-slices   # see what escapes to the heap
+go build -gcflags=-m -o bin/ ./examples/007-arrays-vs-slices   # see what escapes to the heap
 ```
 
 ## What to look for

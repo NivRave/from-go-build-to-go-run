@@ -7,9 +7,9 @@
 // Run:
 //
 //	go run ./examples/002-anatomy-of-a-binary
-//	go build -o hello ./examples/002-anatomy-of-a-binary
-//	go build -ldflags="-s -w" -o hello-small ./examples/002-anatomy-of-a-binary
-//	go version -m hello
+//	go build -o bin/hello ./examples/002-anatomy-of-a-binary
+//	go build -ldflags="-s -w" -o bin/hello-small ./examples/002-anatomy-of-a-binary
+//	go version -m bin/hello
 package main
 
 import (

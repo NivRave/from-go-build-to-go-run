@@ -18,7 +18,7 @@ go test ./examples/058-flame-graphs-and-gc-traces
 GODEBUG=gctrace=1 go run ./examples/058-flame-graphs-and-gc-traces
 go test -run='^$' -bench=. -benchmem -memprofile mem.out ./examples/058-flame-graphs-and-gc-traces
 go tool pprof -http=:8080 -sample_index=alloc_space mem.out        # View -> Flame Graph
-go build -gcflags=-m ./examples/058-flame-graphs-and-gc-traces      # escape analysis decisions
+go build -gcflags=-m -o bin/ ./examples/058-flame-graphs-and-gc-traces      # escape analysis decisions
 ```
 
 PowerShell form of the gctrace run: `$env:GODEBUG="gctrace=1"; go run ./examples/058-flame-graphs-and-gc-traces` (then `Remove-Item Env:GODEBUG`). With `go run`, the go command and the compiler also print their own `gc` lines first; build the binary and run it to see only the program's.

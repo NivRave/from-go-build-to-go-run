@@ -16,8 +16,8 @@ Part 015 is about *where* data lives; this part is about *how the compiler decid
 ```sh
 go run ./examples/016-escape-analysis
 go test ./examples/016-escape-analysis
-go build -gcflags=-m ./examples/016-escape-analysis
-go build -gcflags=-m=2 ./examples/016-escape-analysis   # adds the reason for each decision
+go build -gcflags=-m -o bin/ ./examples/016-escape-analysis
+go build -gcflags=-m=2 -o bin/ ./examples/016-escape-analysis   # adds the reason for each decision
 go test -run='^$' -bench=. -benchmem ./examples/016-escape-analysis
 ```
 
@@ -51,7 +51,7 @@ Process(&u)                                  0 allocs/call
 store(&u)                                    1 allocs/call
 ```
 
-The relevant lines of `go build -gcflags=-m ./examples/016-escape-analysis` (Windows prints the directory part with backslashes):
+The relevant lines of `go build -gcflags=-m -o bin/ ./examples/016-escape-analysis` (Windows prints the directory part with backslashes):
 
 ```text
 examples/016-escape-analysis/main.go:62:6: can inline HeapAlloc

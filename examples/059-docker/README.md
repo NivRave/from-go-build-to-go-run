@@ -35,12 +35,12 @@ docker images gosvc
 Binary size with and without stripping (a Linux build, as in the image):
 
 ```sh
-GOOS=linux CGO_ENABLED=0 go build -o full ./examples/059-docker
-GOOS=linux CGO_ENABLED=0 go build -ldflags="-s -w" -o stripped ./examples/059-docker
-ls -l full stripped
+GOOS=linux CGO_ENABLED=0 go build -o bin/full ./examples/059-docker
+GOOS=linux CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/stripped ./examples/059-docker
+ls -l bin/full bin/stripped
 ```
 
-PowerShell: `$env:GOOS="linux"; $env:CGO_ENABLED="0"; go build -o full ./examples/059-docker` (then `Remove-Item Env:GOOS, Env:CGO_ENABLED`).
+PowerShell: `$env:GOOS="linux"; $env:CGO_ENABLED="0"; go build -o bin/full ./examples/059-docker` (then `Remove-Item Env:GOOS, Env:CGO_ENABLED`).
 
 ## What to look for
 
@@ -68,9 +68,9 @@ gosvc:scratch      98072b0b2d24       10.2MB            3MB
 ```
 
 ```text
-$ ls -l full stripped          # linux/amd64, built with Go 1.26.4
--rw-r--r-- 1 nivik 197609 9443582 Nov 26 08:47 full
--rw-r--r-- 1 nivik 197609 6545570 Nov 26 08:47 stripped
+$ ls -l bin/full bin/stripped          # linux/amd64, built with Go 1.26.4
+-rw-r--r-- 1 nivik 197609 9443582 Nov 26 08:47 bin/full
+-rw-r--r-- 1 nivik 197609 6545570 Nov 26 08:47 bin/stripped
 $ docker run --rm -m 256m gosvc:distroless
 {"go_version":"go1.26.11","gomaxprocs":16,"num_cpu":16,"gomemlimit":"unset","tz_europe_berlin":"ok: Europe/Berlin","system_ca_certs":true}
 ```
