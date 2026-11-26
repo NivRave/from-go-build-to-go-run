@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish combined PDF
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Merge all slides into one PDF
+        run: go run github.com/pdfcpu/pdfcpu/cmd/pdfcpu@v0.16.4 merge "$RUNNER_TEMP/merged.pdf" slides/*.pdf
+
+      - name: Add a searchable text layer (OCR)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ocrmypdf
+          if ocrmypdf --output-type pdf --optimize 0 --jobs 4 "$RUNNER_TEMP/merged.pdf" from-go-build-to-go-run.pdf; then
+            echo "OCR complete"
+          else
+            echo "::warning::OCR failed; publishing the merged PDF without a text layer"
+            cp "$RUNNER_TEMP/merged.pdf" from-go-build-to-go-run.pdf
+          fi
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" from-go-build-to-go-run.pdf \
+            --title "From Go Build To Go Run $GITHUB_REF_NAME" \
+            --generate-notes
