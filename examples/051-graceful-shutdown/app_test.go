@@ -14,6 +14,26 @@ import (
 	"time"
 )
 
+// syncBuffer is a bytes.Buffer safe for concurrent use. After a forced
+// server.Close(), Run returns while an abandoned handler may still be logging,
+// so the test must not read a plain bytes.Buffer the logger is writing to.
+type syncBuffer struct {
+	mu  sync.Mutex
+	buf bytes.Buffer
+}
+
+func (b *syncBuffer) Write(p []byte) (int, error) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.buf.Write(p)
+}
+
+func (b *syncBuffer) String() string {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.buf.String()
+}
+
 // pipeListener is an in-memory net.Listener built on net.Pipe. A synctest
 // bubble cannot tell whether a goroutine blocked on a real socket will wake
 // up, so the tests serve HTTP over pipes instead.
@@ -93,7 +113,7 @@ func startApp(ctx context.Context, app *App) <-chan error {
 func TestRunDrainsInFlightRequest(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		ln := newPipeListener()
-		var logs bytes.Buffer
+		var logs syncBuffer
 		app := NewApp(ln, &logs)
 
 		ctx, cancel := context.WithCancelCause(t.Context())
@@ -144,7 +164,7 @@ func TestRunDrainsInFlightRequest(t *testing.T) {
 func TestRunForcesCloseAfterTimeout(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		ln := newPipeListener()
-		var logs bytes.Buffer
+		var logs syncBuffer
 		app := NewApp(ln, &logs)
 		app.SlowDelay = time.Minute // longer than ShutdownTimeout
 
