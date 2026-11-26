@@ -1,0 +1,23 @@
+# Build output
+/bin/
+*.exe
+*.test
+
+# Profiles and traces written by examples
+*.pprof
+*.prof
+*.out
+*.trace
+
+# Go workspaces are personal (see Part 028)
+go.work
+go.work.sum
+
+# Combined PDF built by the release workflow
+/from-go-build-to-go-run.pdf
+
+# Editors and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

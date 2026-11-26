@@ -1,0 +1,8 @@
+Service configuration
+=====================
+KEY        VALUE                                     LENGTH
+name       checkout                                  8
+port       8080                                      4
+dsn        postgres://app@db/orders?sslmode=disable  40
+log_level  info                                      4
+4 settings
