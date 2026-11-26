@@ -27,22 +27,12 @@ jobs:
         with:
           go-version-file: go.mod
 
+      # The slides' text is already real, searchable text. Only covers and code
+      # snippets are images, and every snippet exists as code in examples/.
+      # (OCRmyPDF --redo-ocr was tried and produced pages that render blank in
+      # MuPDF-based readers, so the merged PDF is published as is.)
       - name: Merge all slides into one PDF
-        run: go run github.com/pdfcpu/pdfcpu/cmd/pdfcpu@v0.16.4 merge "$RUNNER_TEMP/merged.pdf" slides/*.pdf
-
-      # Most slide text is already real text; covers and code snippets are
-      # images. --redo-ocr keeps the existing text and OCRs only the image
-      # regions, which makes the code searchable too.
-      - name: Add a searchable text layer to image regions (OCR)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ocrmypdf
-          if ocrmypdf --redo-ocr --output-type pdf --optimize 0 --jobs 4 "$RUNNER_TEMP/merged.pdf" from-go-build-to-go-run.pdf; then
-            echo "OCR complete"
-          else
-            echo "::warning::OCR failed; publishing the merged PDF without the extra text layer"
-            cp "$RUNNER_TEMP/merged.pdf" from-go-build-to-go-run.pdf
-          fi
+        run: go run github.com/pdfcpu/pdfcpu/cmd/pdfcpu@v0.16.4 merge from-go-build-to-go-run.pdf slides/*.pdf
 
       - name: Create or update the GitHub release
         env:
