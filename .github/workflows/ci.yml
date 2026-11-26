@@ -1,0 +1,149 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Check formatting
+        if: runner.os == 'Linux'
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then echo "Run gofmt on:"; echo "$unformatted"; exit 1; fi
+
+      - name: Check go.mod is tidy
+        if: runner.os == 'Linux'
+        run: go mod tidy -diff
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test with race detector
+        if: runner.os == 'Linux'
+        run: go test -race -count=1 ./...
+
+      - name: Test
+        if: runner.os != 'Linux'
+        run: go test -count=1 ./...
+
+      - name: Run every benchmark once
+        if: runner.os == 'Linux'
+        run: go test -run='^$' -bench=. -benchtime=1x ./...
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.15.0
+
+  smoke:
+    name: Run every example
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Build all examples
+        run: go build -o "$RUNNER_TEMP/bin/" ./examples/...
+
+      - name: Run each example (must exit 0 within 60s)
+        run: |
+          # These need Postgres and run in the integration job instead.
+          skip=" 055-mastering-the-db 056-transactions-and-tuning "
+          for bin in "$RUNNER_TEMP"/bin/*; do
+            name="$(basename "$bin")"
+            case "$skip" in *" $name "*) echo "skip $name"; continue ;; esac
+            echo "::group::$name"
+            timeout 60 "$bin"
+            echo "::endgroup::"
+          done
+
+  integration:
+    name: Postgres examples
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: gobuild
+          POSTGRES_PASSWORD: gobuild
+          POSTGRES_DB: gobuild
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U gobuild"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://gobuild:gobuild@localhost:5432/gobuild?sslmode=disable
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - name: Test
+        run: go test -race -count=1 ./examples/055-mastering-the-db/... ./examples/056-transactions-and-tuning/...
+      - name: Run
+        run: |
+          go run ./examples/055-mastering-the-db
+          go run ./examples/056-transactions-and-tuning
+
+  nested-modules:
+    name: Nested modules (028)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: examples/028-modules-replace-and-versioning/workspace/app
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      - run: go run .
+
+  docker:
+    name: Docker images (059)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build distroless image
+        run: docker build -f examples/059-docker/Dockerfile -t gosvc:distroless .
+      - name: Build scratch image
+        run: docker build -f examples/059-docker/Dockerfile.scratch -t gosvc:scratch .
+      - name: Run both images once
+        run: |
+          docker run --rm gosvc:distroless
+          docker run --rm gosvc:scratch
+      - name: Report image sizes
+        run: docker images gosvc

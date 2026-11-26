@@ -1,0 +1,18 @@
+# Postgres for examples 055 and 056.
+#   docker compose up -d
+#   export DATABASE_URL=postgres://gobuild:gobuild@localhost:5432/gobuild?sslmode=disable
+#   docker compose down          # data is not persisted
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: gobuild
+      POSTGRES_PASSWORD: gobuild
+      POSTGRES_DB: gobuild
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gobuild"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

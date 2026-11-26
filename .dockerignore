@@ -1,0 +1,6 @@
+# Keep the Docker build context small: the slides alone are ~170 MB.
+.git/
+.github/
+slides/
+*.pdf
+IMPLEMENTATION_PLAN*.md
